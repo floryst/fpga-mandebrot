@@ -23,10 +23,10 @@ module instr_mem(
 	output [31:0] instr
     );
 
-	// 32 locations
+	// 128 locations
 	// 32-bit data
-	reg [31:0] memory [31:0];
-	initial $readmemb("mem_instr", memory, 0, 31);
+	reg [31:0] memory [63:0];
+	initial $readmemb("mem_instr", memory, 0, 63);
 
 	assign instr = memory[ {2'b0, pc[31:2]} ];
 

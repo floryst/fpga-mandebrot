@@ -34,7 +34,7 @@ module mipsCPU(
 	wire [5:0] func;
 	wire [4:0] alufn;
 	wire f_bne, f_beq, f_regwrite, f_zeroextend, f_dst_rt_rd, 
-			f_shiftval, f_alusrc, f_mem2reg, f_jump;
+			f_shiftval, f_alusrc, f_mem2reg, f_jump1, f_jump2, f_lui;
 
 	datapath mipsdatapath(
 		.clk(clk),
@@ -53,6 +53,7 @@ module mipsCPU(
 		.f_mem2reg(f_mem2reg),
 		.f_jump1(f_jump1),
 		.f_jump2(f_jump2),
+		.f_lui(f_lui),
 		
 		.memaddr(memaddr),
 		.writedata(writedata),
@@ -76,7 +77,8 @@ module mipsCPU(
 		.f_alusrc(f_alusrc),
 		.f_mem2reg(f_mem2reg),
 		.f_jump1(f_jump1),
-		.f_jump2(f_jump2)
+		.f_jump2(f_jump2),
+		.f_lui(f_lui)
 	);
 
 endmodule

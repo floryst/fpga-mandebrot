@@ -21,12 +21,16 @@
 module top(
 	input clk,
 	input rst,
+	input ps2_clk,
+	input ps2_data,
 	
 	output hsync,
 	output vsync,
 	output [2:0] red,
 	output [2:0] green,
-	output [2:1] blue
+	output [2:1] blue,
+	output [7:0] segments,
+	output [3:0] digitselect
     );
 
 	wire [31:0] pc;
@@ -37,10 +41,19 @@ module top(
 	wire [31:0] memaddr;
 	wire [10:0] vga_addr;
 	wire [7:0] vga_code;
+	wire [15:0] kb_char;
+	
+	wire fract_ready;
+	wire fract_pixel;
+	wire [18:0] fractmem_write_addr;
+	wire fractmem_out_pixel;
+	wire [18:0] fractmem_out_addr;
+	wire [31:0] fcPanX;
+	wire [31:0] fcPanY;
 
 	wire clk100, clk50, clk25, clk12;
-	//clockdivider_Nexys3 clkdv(clk, clk100, clk50, clk25, clk12);
-	assign clk50 = clk;
+	clockdivider_Nexys3 clkdv(clk, clk100, clk50, clk25, clk12);
+	//assign clk50 = clk;
 	
 	mipsCPU cpu(
 		.clk(clk50),
@@ -64,18 +77,27 @@ module top(
 	// memio
 	memIO memio(
 		.clk(clk50),
+		.ps2_clk(ps2_clk),
+		.ps2_data(ps2_data),
 		.f_memwrite(f_memwrite),
 		.memaddr(memaddr),
 		.writedata(writedata),
 		
 		.readdata(readdata),
 		
+		// keyboard port
+		.kb_char(kb_char),
+		
+		// fractcore params
+		.fcPanX(fcPanX),
+		.fcPanY(fcPanY)
+		
 		// vga port
-		.vga_addr(vga_addr),
-		.vga_code(vga_code)
+		//.vga_addr(vga_addr),
+		//.vga_code(vga_code)
 	);
 
-	// vgadisplay
+	/* vgadisplay
 	vgadisplay vga(
 		.clk(clk),
 		.screen_code(vga_code),
@@ -86,6 +108,47 @@ module top(
 		.green(green),
 		.blue(blue),
 		.screen_addr(vga_addr)
+	);*/
+	
+	display4digit d4d(
+		.A(kb_char),
+		.clk(clk),
+		.segments(segments),
+		.digitselect(digitselect)
+	);
+	
+	fractcore fc(
+		.clk(clk50),
+		.centerx(fcPanX),
+		.centery(fcPanY),
+		
+		.ready(fract_ready),
+		.pixel(fract_pixel),
+		.write_addr(fractmem_write_addr)
+	);
+	
+	fractmem fm(
+		.clk(clk50),
+		.write(fract_ready),
+		.write_pixel(fract_pixel),
+		.write_addr(fractmem_write_addr),
+		
+		// for vga display
+		.out_pixel(fractmem_out_pixel),
+		.out_addr(fractmem_out_addr)
+	);
+	
+	vgadisplaydriver vga(
+		.clk(clk),
+		.red(red),
+		.green(green),
+		.blue(blue),
+		.hsync(hsync),
+		.vsync(vsync),
+		
+		// fractmem
+		.fractmem_addr(fractmem_out_addr),
+		.fractmem_pixel(fractmem_out_pixel)
 	);
 
 endmodule

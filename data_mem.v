@@ -24,7 +24,11 @@ module data_mem(
 	input [12:0] addr,
 	input [31:0] writedata,
 	
-	output [31:0] readdata
+	output [31:0] readdata,
+	
+	// fractcore params
+	output [31:0] fcpanX,
+	output [31:0] fcpanY
     );
 
 	reg [31:0] memory [31:0];
@@ -33,7 +37,10 @@ module data_mem(
 	always @(posedge clk)
 		memory[addr[4:0]] <= f_memwrite == 1 ? writedata : memory[addr[4:0]];
 	
-	assign readdata = memory[addr[3:0]];
+	assign readdata = memory[addr[4:0]];
 	
+	// fractcore params
+	assign fcpanX = memory[5'b11111];
+	assign fcpanY = memory[5'b11110];
 
 endmodule

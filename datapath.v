@@ -39,6 +39,7 @@ module datapath(
 	// jump=2'b11 - jal
 	input f_jump1,
 	input f_jump2,
+	input f_lui,
 	
 	output [31:0] memaddr,
 	output [31:0] writedata,
@@ -72,7 +73,8 @@ module datapath(
 	
 	// register file inputs (alu out & load word from datamem & jal ret ($31) store)
 	assign writeregdata = f_mem2reg == 1 ? readmem : 
-		(f_jump1 & f_jump2) ? pcplus8 : aluout;
+		(f_jump1 & f_jump2) ? pcplus8 : 
+		f_lui ? {instr[15:0], 16'b0 } : aluout;
 	assign writereg = f_dst_rt_rd == 1 ? instr[15:11] : 
 		(f_jump1 & f_jump2) ? 5'b11111 : instr[20:16];
 	assign reg1 = instr[25:21];

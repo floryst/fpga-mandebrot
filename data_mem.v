@@ -28,7 +28,8 @@ module data_mem(
 	
 	// fractcore params
 	output [31:0] fcpanX,
-	output [31:0] fcpanY
+	output [31:0] fcpanY,
+	output [31:0] fcZoom
     );
 
 	reg [31:0] memory [31:0];
@@ -42,5 +43,6 @@ module data_mem(
 	// fractcore params
 	assign fcpanX = memory[5'b11111];
 	assign fcpanY = memory[5'b11110];
+	assign fcZoom = memory[5'b11101];
 
 endmodule

@@ -22,6 +22,7 @@ module fractcore(
 input clk,
 input [31:0] centerx,
 input [31:0] centery,
+input [3:0] zoom,
 output ready,
 output pixel,
 output [18:0] write_addr
@@ -78,11 +79,11 @@ always @(posedge clk) begin
 				x = 0;
 			end
 			iterations = 0;
-			cartx = x - centerx;
-			carty = centery - y;
+			cartx = (x - centerx);
+			carty = (centery - y);
 			// compute c.r and c.i
-			cR = cartx << (18);
-			cI = carty << (18);
+			cR = cartx << (18-zoom);
+			cI = carty << (18-zoom);
 			zR = 0;
 			zI = 0;
 		end

@@ -50,6 +50,7 @@ module top(
 	wire [18:0] fractmem_out_addr;
 	wire [31:0] fcPanX;
 	wire [31:0] fcPanY;
+	wire [31:0] fcZoom;
 
 	wire clk100, clk50, clk25, clk12;
 	clockdivider_Nexys3 clkdv(clk, clk100, clk50, clk25, clk12);
@@ -90,7 +91,8 @@ module top(
 		
 		// fractcore params
 		.fcPanX(fcPanX),
-		.fcPanY(fcPanY)
+		.fcPanY(fcPanY),
+		.fcZoom(fcZoom)
 		
 		// vga port
 		//.vga_addr(vga_addr),
@@ -121,6 +123,7 @@ module top(
 		.clk(clk50),
 		.centerx(fcPanX),
 		.centery(fcPanY),
+		.zoom(fcZoom),
 		
 		.ready(fract_ready),
 		.pixel(fract_pixel),

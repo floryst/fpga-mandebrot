@@ -33,7 +33,8 @@ module memIO(
 	
 	// fractcore params
 	output [31:0] fcPanX,
-	output [31:0] fcPanY
+	output [31:0] fcPanY,
+	output [31:0] fcZoom
 	
 	// vga port
 	//input [10:0] vga_addr,
@@ -67,7 +68,8 @@ module memIO(
 		
 		// fractcore params
 		.fcpanX(fcPanX),
-		.fcpanY(fcPanY)
+		.fcpanY(fcPanY),
+		.fcZoom(fcZoom)
 	);
 
 	keyboard kb(clk, ps2_clk, ps2_data, keyboard_read);

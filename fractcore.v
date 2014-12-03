@@ -43,12 +43,12 @@ reg [31:0] cartx;
 reg [31:0] carty;
 
 // fractal params
-reg [31:0] cR = 0;
-reg [31:0] cI = 0;
-reg [31:0] zR = 0;
-reg [31:0] zI = 0;
+reg [47:0] cR = 0;
+reg [47:0] cI = 0;
+reg [47:0] zR = 0;
+reg [47:0] zI = 0;
 
-reg [5:0] iterations = 0;
+reg [6:0] iterations = 0;
 
 assign write_addr = (y * 160) + x;
 
@@ -59,8 +59,8 @@ always @(posedge clk) begin
 		y = 0;
 		cartx = -centerx;
 		carty = centery;
-		cR = cartx << 18; // default 18
-		cI = carty << 18;
+		cR = cartx << 34; // fractional bits - 6
+		cI = carty << 34;
 		zR = 0;
 		zI = 0;
 	end
@@ -82,8 +82,8 @@ always @(posedge clk) begin
 			cartx = (x - centerx);
 			carty = (centery - y);
 			// compute c.r and c.i
-			cR = cartx << (18-zoom);
-			cI = carty << (18-zoom);
+			cR = cartx << (34-zoom);
+			cI = carty << (34-zoom);
 			zR = 0;
 			zI = 0;
 		end
@@ -97,30 +97,30 @@ end
 
 // combinational logic for computing fractal iterations
 
-wire [31:0] new_zR, new_zI;
+wire [47:0] new_zR, new_zI;
 
-wire [63:0] signedzR;
-wire [63:0] signedzI;
-assign signedzR = {{32{zR[31]}}, zR};
-assign signedzI = {{32{zI[31]}}, zI};
+wire [95:0] signedzR;
+wire [95:0] signedzI;
+assign signedzR = {{48{zR[47]}}, zR};
+assign signedzI = {{48{zI[47]}}, zI};
 
-wire [63:0] zRsqr;
-wire [63:0] zIsqr;
-wire [63:0] zRmultzI;
-wire [63:0] largezR;
+wire [95:0] zRsqr;
+wire [95:0] zIsqr;
+wire [95:0] zRmultzI;
+wire [95:0] largezR;
 assign zRsqr = signedzR * signedzR;
 assign zIsqr = signedzI * signedzI;
 assign zRmultzI = ((signedzR * signedzI) * 2);
 assign largezR = zRsqr - zIsqr;
 
 // truncate for upper bits
-assign new_zI = zRmultzI[55:24] + {{32{cI[31]}},cI};
-assign new_zR = largezR[55:24] + {{32{cR[31]}},cR};
+assign new_zI = zRmultzI[87:40] + {{48{cI[47]}},cI};
+assign new_zR = largezR[87:40] + {{48{cR[47]}},cR};
 
 // exit condition
-wire [63:0] zRsqrPluszIsqr;
+wire [95:0] zRsqrPluszIsqr;
 assign zRsqrPluszIsqr = zRsqr + zIsqr;
-wire f_unbounded = zRsqrPluszIsqr[55:24] > (3'b100 << 24); // shift 24 for proper comparison
+wire f_unbounded = zRsqrPluszIsqr[87:40] > (3'b100 << 40); // shift (fractional bits) for proper comparison
 
 assign pixel = ~f_unbounded;
 assign ready = f_unbounded | &iterations;

@@ -22,7 +22,7 @@ module fractcore(
 input clk,
 input [31:0] centerx,
 input [31:0] centery,
-input [3:0] zoom,
+input [5:0] zoom,
 output ready,
 output pixel,
 output [18:0] write_addr

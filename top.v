@@ -28,10 +28,8 @@ module top(
 	output vsync,
 	output [2:0] red,
 	output [2:0] green,
-	output [2:1] blue,
-	output [7:0] segments,
-	output [3:0] digitselect
-    );
+	output [2:1] blue
+     );
 
 	wire [31:0] pc;
 	wire [31:0] instr;
@@ -111,13 +109,6 @@ module top(
 		.blue(blue),
 		.screen_addr(vga_addr)
 	);*/
-	
-	display4digit d4d(
-		.A(kb_char),
-		.clk(clk),
-		.segments(segments),
-		.digitselect(digitselect)
-	);
 	
 	fractcore fc(
 		.clk(clk50),

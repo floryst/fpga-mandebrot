@@ -1,0 +1,6 @@
+FPGA Mandelbrot Viewer
+----------------------
+
+This is a FPGA mandelbrot viewer. It utilizes 48-bit precision fixed-point (8 bits integer, 40 bits decimal) to compute the set.
+
+The panning code is controlled via a MIPS program/CPU (also written in Verilog) that uses memory-mapped IO to communicate with the fractal core.
